@@ -3,6 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{6A80CF10-CF79-48A5-AED5-78E5EB61188D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+		.dockerignore = .dockerignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4453FA52-D571-4783-B73A-E163CC3FA325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener", "src\UrlShortener\UrlShortener.csproj", "{EF9E4F6A-83DB-4120-9404-296880F26C19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B7A1EA36-794A-498D-AC41-000EBCF7AC5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +25,12 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF9E4F6A-83DB-4120-9404-296880F26C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF9E4F6A-83DB-4120-9404-296880F26C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF9E4F6A-83DB-4120-9404-296880F26C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF9E4F6A-83DB-4120-9404-296880F26C19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF9E4F6A-83DB-4120-9404-296880F26C19} = {4453FA52-D571-4783-B73A-E163CC3FA325}
 	EndGlobalSection
 EndGlobal
