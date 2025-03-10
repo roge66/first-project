@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-app.MapPost("/api/shorten", (ShortenUrlRequest request) =>
+app.MapPost("/shorten", (ShortenUrlRequest request) =>
 {
     return Results.Ok(new ShortenUrlResponse(""));
 });

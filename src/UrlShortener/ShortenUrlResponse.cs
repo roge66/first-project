@@ -1,3 +1,3 @@
 ﻿namespace UrlShortener;
 
-public record ShortenUrlResponse(string ShortUrl);
+public sealed record ShortenUrlResponse(string ShortUrl);
