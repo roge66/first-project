@@ -3,35 +3,36 @@ using UrlShortener;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApi();
+builder.Services.AddSingleton<IShortenedLinkStorage, ShortenedLinkStorage>();
+builder.Services.AddScoped<IShortenedLinkService, ShortenedLinkService>();
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "UrlShortener API",
-        Version = "v1",
-        Description = "API для сокращения URL-адресов"
-    });
-});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "UrlShortener API");
+        options.SwaggerEndpoint("/openapi/v1.json", "UrlShortener API");
     });
 }
 
-app.MapPost("/shorten", (ShortenUrlRequest request) =>
+app.MapPost("/shorten", async (ShortenUrlRequest request, IShortenedLinkService service) =>
 {
-    return Results.Ok(new ShortenUrlResponse(""));
+    if (!Uri.TryCreate(request.Url, UriKind.Absolute, out _))
+    {
+        return Results.BadRequest("Invalid url");
+    }
+    
+    var shortLink = await service.GenerateShortLinkAsync(request.Url);
+    return Results.Ok(new {ShortUrl = $"{app.Urls.First()}/{shortLink}" });
 });
 
-app.MapGet("{shortCode}", (string shortCode) =>
+app.MapGet("{shortCode}", async (string shortCode, IShortenedLinkService service) =>
 {
-    return Results.Ok($"{shortCode}");
+    var originalUrl = await service.GetOriginalLinkAsync(shortCode);
+    return originalUrl is null ? Results.NotFound() : Results.Redirect(originalUrl);
 });
 
 app.Run();
