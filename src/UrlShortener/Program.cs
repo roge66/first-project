@@ -18,21 +18,29 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.MapPost("/shorten", async (ShortenUrlRequest request, IShortenedLinkService service) =>
+app.MapPost("/shorten", async (
+    ShortenUrlRequest request, 
+    IShortenedLinkService service,
+    CancellationToken cancellationToken) =>
 {
     if (!Uri.TryCreate(request.Url, UriKind.Absolute, out _))
     {
         return Results.BadRequest("Invalid url");
     }
     
-    var shortLink = await service.GenerateShortLinkAsync(request.Url);
-    return Results.Ok(new {ShortUrl = $"{app.Urls.First()}/{shortLink}" });
+    var shortLink = await service.GenerateShortLinkAsync(request.Url, cancellationToken);
+    return Results.Ok(new ShortenUrlResponse($"{app.Urls.First()}/{shortLink}"));
 });
 
-app.MapGet("{shortCode}", async (string shortCode, IShortenedLinkService service) =>
+app.MapGet("{shortCode}", async (
+    string shortCode, 
+    IShortenedLinkService service,
+    CancellationToken cancellationToken) =>
 {
-    var originalUrl = await service.GetOriginalLinkAsync(shortCode);
-    return originalUrl is null ? Results.NotFound() : Results.Redirect(originalUrl);
+    var originalUrl = await service.GetOriginalLinkAsync(shortCode, cancellationToken);
+    return originalUrl is null 
+        ? Results.NotFound() 
+        : Results.Redirect(originalUrl);
 });
 
 app.Run();

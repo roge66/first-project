@@ -2,6 +2,6 @@
 
 public interface IShortenedLinkService
 {
-    Task<string> GenerateShortLinkAsync(string originalLink);
-    Task<string?> GetOriginalLinkAsync(string shortLink);
+    Task<string> GenerateShortLinkAsync(string originalLink, CancellationToken cancellationToken);
+    Task<string?> GetOriginalLinkAsync(string shortLink, CancellationToken cancellationToken);
 }

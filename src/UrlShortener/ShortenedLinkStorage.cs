@@ -4,17 +4,22 @@ namespace UrlShortener;
 
 public sealed class ShortenedLinkStorage : IShortenedLinkStorage
 {
-    private readonly ConcurrentDictionary<string, string> _links = new();
+    private readonly ConcurrentDictionary<string, string> _shortLinkToOriginalLinkMap = new();
 
-    public Task AddAsync(string shortLink, string originalLink)
+    public Task AddAsync(string shortLink, string originalLink, CancellationToken cancellationToken)
     {
-        _links.TryAdd(shortLink, originalLink);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!_shortLinkToOriginalLinkMap.TryAdd(shortLink, originalLink))
+        {
+            throw new ShortLinkCollisionException($"Short link {shortLink} already exists.");
+        }
         return Task.CompletedTask;
     }
 
-    public Task<string?> GetOriginalLinkAsync(string shortLink)
+    public Task<string?> GetOriginalLinkAsync(string shortLink, CancellationToken cancellationToken)
     {
-        _links.TryGetValue(shortLink, out var originalLink);
+        cancellationToken.ThrowIfCancellationRequested();
+        var originalLink = _shortLinkToOriginalLinkMap.GetValueOrDefault(shortLink, null);
         return Task.FromResult(originalLink);
     }
 }

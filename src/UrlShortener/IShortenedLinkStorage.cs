@@ -2,6 +2,6 @@
 
 public interface IShortenedLinkStorage
 {
-    Task AddAsync(string shortLink, string originalLink);
-    Task<string?> GetOriginalLinkAsync(string shortLink);
+    Task AddAsync(string shortLink, string originalLink, CancellationToken cancellationToken);
+    Task<string?> GetOriginalLinkAsync(string shortLink, CancellationToken cancellationToken);
 }
