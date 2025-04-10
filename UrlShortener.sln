@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{6A80CF
 		.gitignore = .gitignore
 		README.md = README.md
 		.dockerignore = .dockerignore
+		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4453FA52-D571-4783-B73A-E163CC3FA325}"
