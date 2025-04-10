@@ -1,6 +1,6 @@
 ﻿namespace UrlShortener;
 
-public class ShortLinkCollisionException : Exception
+public sealed class ShortLinkCollisionException : Exception
 {
     public ShortLinkCollisionException(string message) : base(message)
     {

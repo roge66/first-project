@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace UrlShortener;
 
-public class EfCoreShortenedLinkStorage : IShortenedLinkStorage
+public sealed class EfCoreShortenedLinkStorage : IShortenedLinkStorage
 {
     private readonly AppDbContext _context;
 

@@ -1,6 +1,6 @@
 ﻿namespace UrlShortener;
 
-public class ShortLink
+public sealed class ShortLink
 {
     public Guid Id { get; set; }
     public required string ShortCode { get; set; }
