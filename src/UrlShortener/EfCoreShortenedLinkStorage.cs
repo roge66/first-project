@@ -41,7 +41,7 @@ public sealed class EfCoreShortenedLinkStorage : IShortenedLinkStorage
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private bool IsUniqueConstraintViolation(DbUpdateException exception)
+    private static bool IsUniqueConstraintViolation(DbUpdateException exception)
     {
         return exception.InnerException is PostgresException { SqlState: "23505" };
     }

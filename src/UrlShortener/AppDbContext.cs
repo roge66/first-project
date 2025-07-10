@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace UrlShortener;
 
-public class AppDbContext : DbContext
+public sealed class AppDbContext : DbContext
 {
     public DbSet<ShortLink> ShortLinks { get; set; }
 
@@ -15,8 +16,14 @@ public class AppDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ShortLink>()
-            .HasIndex(x => x.ShortCode)
-            .IsUnique();
+        modelBuilder.ApplyConfiguration(new ShortLinkConfiguration());
+    }
+
+    public class ShortLinkConfiguration : IEntityTypeConfiguration<ShortLink>
+    {
+        public void Configure(EntityTypeBuilder<ShortLink> builder)
+        {
+            builder.HasIndex(x => x.ShortCode).IsUnique();
+        }
     }
 }
