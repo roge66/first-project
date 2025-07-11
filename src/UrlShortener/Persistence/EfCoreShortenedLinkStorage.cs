@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using UrlShortener.Services;
 
-namespace UrlShortener;
+namespace UrlShortener.Persistence;
 
 public sealed class EfCoreShortenedLinkStorage : IShortenedLinkStorage
 {
