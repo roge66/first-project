@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using UrlShortener;
 using UrlShortener.Persistence;
 using UrlShortener.Services;
 
