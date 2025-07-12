@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace UrlShortener;
+namespace UrlShortener.Services;
 
 public sealed class ShortenedLinkStorage : IShortenedLinkStorage
 {

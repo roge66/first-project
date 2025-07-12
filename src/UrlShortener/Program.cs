@@ -1,13 +1,24 @@
-using Microsoft.OpenApi.Models;
-using UrlShortener;
+using Microsoft.EntityFrameworkCore;
+using UrlShortener.Persistence;
+using UrlShortener.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration["DbConnectionString"]!));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
-builder.Services.AddSingleton<IShortenedLinkStorage, ShortenedLinkStorage>();
+builder.Services.AddScoped<IShortenedLinkStorage, EfCoreShortenedLinkStorage>();
 builder.Services.AddScoped<IShortenedLinkService, ShortenedLinkService>();
 
 var app = builder.Build();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
