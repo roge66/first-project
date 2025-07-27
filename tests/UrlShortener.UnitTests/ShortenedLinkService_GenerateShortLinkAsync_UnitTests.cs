@@ -1,74 +1,78 @@
-﻿namespace UrlShortener.UnitTests;
-
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Services;
-using Xunit;
+﻿using UrlShortener.Services;
 using Moq;
 
-public class ShortenedLinkService_GenerateShortLinkAsync_UnitTests
+namespace UrlShortener.UnitTests;
+
+public class ShortenedLinkServiceGenerateShortLinkAsyncUnitTests
 {
-    [Fact]
-    public async Task FirstAttemptSuccess()
+    private readonly Mock<IShortenedLinkStorage> _mockStorage = new Mock<IShortenedLinkStorage>();
+    private readonly ShortenedLinkService _service;
+
+    public ShortenedLinkServiceGenerateShortLinkAsyncUnitTests()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
+        _service = new  ShortenedLinkService(_mockStorage.Object);
+    }
+
+    [Fact]
+    public async Task GenerateShortLinkAsync_ShouldCreateAndSaveShortenedLink_WhenThereIsNoCollision()
+    {
+        // Arrange
+        _mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
                  "http://www.example.com",
-            It.IsAny<CancellationToken>()));
+            It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None);
         
-        var service = new ShortenedLinkService(mockStorage.Object);
-        
-        var result = await service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None);
-        
+        // Assert
         Assert.NotNull(result);
         Assert.Equal(8, result.Length);
-        mockStorage.Verify(s => s.AddAsync(result,
+        _mockStorage.Verify(s => s.AddAsync(result,
                  "http://www.example.com",
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CollisionThenSuccess()
+    public async Task GenerateShortLinkAsync_ShouldCreateAndSaveShortenedLink_WhenThereIsCollision()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.SetupSequence(s => s.AddAsync(It.IsAny<string>(),
+        // Assert
+        _mockStorage.SetupSequence(s => s.AddAsync(It.IsAny<string>(),
                  It.IsAny<string>(),
             It.IsAny<CancellationToken>()))
             .Throws(new ShortLinkCollisionException("Fail"))
             .Throws(new ShortLinkCollisionException("Fail"))
             .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None);
         
-        var service = new ShortenedLinkService(mockStorage.Object);
-        
-        var result = await service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None);
-        
+        // Assert
         Assert.NotNull(result);
-        mockStorage.Verify(s => s.AddAsync(It.IsAny<string>(),
+        _mockStorage.Verify(s => s.AddAsync(It.IsAny<string>(),
                  It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Exactly(3));
     }
 
     [Fact]
-    public async Task CollisionThenFailure()
+    public async Task GenerateShortLinkAsync_ShouldFail_WhenThereIsCollision()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
+        // Arrange
+        _mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .Throws(new ShortLinkCollisionException("Fail"));
-        
-        var service = new ShortenedLinkService(mockStorage.Object);
-        
-        await Assert.ThrowsAsync<InvalidOperationException>(() => 
-            service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None));
+
+        // Act & Assert
+        var act = () => _service.GenerateShortLinkAsync("http://www.example.com", CancellationToken.None);
+        await Assert.ThrowsAsync<InvalidOperationException>(act);
     }
 
     [Fact]
-    public async Task Cancelled_ThrowsOperationCanceledException()
+    public async Task GenerateShortLinkAsync_ShouldCancel_ThrowsOperationCanceledException()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
+        // Arrange
+        _mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -76,8 +80,8 @@ public class ShortenedLinkService_GenerateShortLinkAsync_UnitTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
         
-        var service = new ShortenedLinkService(mockStorage.Object);
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            service.GenerateShortLinkAsync("http://www.example.com",  cts.Token));
+        // Act & Assert
+        var act = () => _service.GenerateShortLinkAsync("http://www.example.com",  cts.Token);
+        await Assert.ThrowsAsync<OperationCanceledException>(act);
     }
 }

@@ -1,41 +1,43 @@
-﻿namespace UrlShortener.UnitTests;
-
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Services;
-using Xunit;
+﻿using UrlShortener.Services;
 using Moq;
 
-public class ShortenedLinkService_GetOriginalLinkAsync_UnitTests
+namespace UrlShortener.UnitTests;
+public class ShortenedLinkServiceGetOriginalLinkAsyncUnitTests
 {
-    [Fact]
-    public async Task LinkExists_ReturnOriginalLink()
+    private readonly Mock<IShortenedLinkStorage> _mockStorage = new Mock<IShortenedLinkStorage>();
+    private readonly ShortenedLinkService _service;
+
+    public ShortenedLinkServiceGetOriginalLinkAsyncUnitTests()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.Setup(s => s.GetOriginalLinkAsync("abc123ab",
+        _service = new  ShortenedLinkService(_mockStorage.Object);
+    }
+    [Fact]
+    public async Task GetOriginalLinkAsync_LinkExists_ReturnOriginalLink()
+    {
+        // Arrange
+        _mockStorage.Setup(s => s.GetOriginalLinkAsync("abc123ab",
             It.IsAny<CancellationToken>()))
             .ReturnsAsync("http://www.example.com");
         
-        var service = new ShortenedLinkService(mockStorage.Object);
+        // Act
+        var result = await _service.GetOriginalLinkAsync("abc123ab",  CancellationToken.None);
         
-        var result = await service.GetOriginalLinkAsync("abc123ab",  CancellationToken.None);
-        
+        // Assert
         Assert.Equal("http://www.example.com", result);
     }
 
     [Fact]
-    public async Task LinkNotExists_ReturnNull()
+    public async Task GetOriginalLinkAsync_LinkNotExists_ReturnNull()
     {
-        var mockStorage = new Mock<IShortenedLinkStorage>();
-        mockStorage.Setup(s => s.GetOriginalLinkAsync("invalid",
+        // Arrange
+        _mockStorage.Setup(s => s.GetOriginalLinkAsync("invalid",
             It.IsAny<CancellationToken>()))
             .ReturnsAsync((string)null);
         
-        var  service = new ShortenedLinkService(mockStorage.Object);
+        // Act
+        var result = await _service.GetOriginalLinkAsync("invalid", CancellationToken.None);
         
-        var result = await service.GetOriginalLinkAsync("invalid", CancellationToken.None);
-        
+        // Assert
         Assert.Null(result);
     }
 }
