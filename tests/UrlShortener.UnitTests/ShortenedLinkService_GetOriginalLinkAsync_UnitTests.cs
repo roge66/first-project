@@ -15,15 +15,17 @@ public class ShortenedLinkServiceGetOriginalLinkAsyncUnitTests
     public async Task GetOriginalLinkAsync_ShouldReturnOriginalLink_WhenLinkExists()
     {
         // Arrange
-        _mockStorage.Setup(s => s.GetOriginalLinkAsync("abc123ab",
+        const string originalLink = "http://www.example.com";
+        const string shortCode = "abc123ab";
+        _mockStorage.Setup(s => s.GetOriginalLinkAsync(shortCode,
             It.IsAny<CancellationToken>()))
-            .ReturnsAsync("http://www.example.com");
+            .ReturnsAsync(originalLink);
         
         // Act
-        var result = await _service.GetOriginalLinkAsync("abc123ab",  CancellationToken.None);
+        var result = await _service.GetOriginalLinkAsync(shortCode,  CancellationToken.None);
         
         // Assert
-        Assert.Equal("http://www.example.com", result);
+        Assert.Equal(originalLink, result);
     }
 
     [Fact]
