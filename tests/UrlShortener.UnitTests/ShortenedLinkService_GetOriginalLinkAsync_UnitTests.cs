@@ -12,7 +12,7 @@ public class ShortenedLinkServiceGetOriginalLinkAsyncUnitTests
         _service = new  ShortenedLinkService(_mockStorage.Object);
     }
     [Fact]
-    public async Task GetOriginalLinkAsync_LinkExists_ReturnOriginalLink()
+    public async Task GetOriginalLinkAsync_ShouldReturnOriginalLink_WhenLinkExists()
     {
         // Arrange
         _mockStorage.Setup(s => s.GetOriginalLinkAsync("abc123ab",
@@ -27,7 +27,7 @@ public class ShortenedLinkServiceGetOriginalLinkAsyncUnitTests
     }
 
     [Fact]
-    public async Task GetOriginalLinkAsync_LinkNotExists_ReturnNull()
+    public async Task GetOriginalLinkAsync_ShouldReturnNull_WhenLinkNotExists()
     {
         // Arrange
         _mockStorage.Setup(s => s.GetOriginalLinkAsync("invalid",

@@ -69,7 +69,7 @@ public class ShortenedLinkServiceGenerateShortLinkAsyncUnitTests
     }
 
     [Fact]
-    public async Task GenerateShortLinkAsync_ShouldCancel_ThrowsOperationCanceledException()
+    public async Task GenerateShortLinkAsync_ShouldCancel_WhenThereIsCollision()
     {
         // Arrange
         _mockStorage.Setup(s => s.AddAsync(It.IsAny<string>(),
