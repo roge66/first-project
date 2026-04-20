@@ -70,7 +70,7 @@ public class ShortenedLinkServiceGenerateShortLinkAsyncUnitTests
     }
 
     [Fact]
-    public async Task GenerateShortLinkAsync_ShouldCancel_WhenThereIsCollision()
+    public async Task GenerateShortLinkAsync_ShouldCancel_WhenCancellationTokenIsCanceled()
     {
         // Arrange
         const string originalLink = "http://www.example.com";
